@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student Accommodation Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f5f3;--surface:#fff;--ink:#16302f;--mute:#5b6b6a;--line:#d5deda;--teal:#1f7a6d;--gold:#e3a72f;--red:#b23a3a;--on-teal:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b1a;--surface:#182827;--ink:#e6efec;--mute:#93a5a2;--line:#2b3f3d;--teal:#3fb4a3;--gold:#e8b445;--red:#e06a6a;--on-teal:#0f1b1a}}
+:root[data-theme="dark"]{--bg:#0f1b1a;--surface:#182827;--ink:#e6efec;--mute:#93a5a2;--line:#2b3f3d;--teal:#3fb4a3;--gold:#e8b445;--red:#e06a6a;--on-teal:#0f1b1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5}
+header{padding:20px 20px 0;max-width:1100px;margin:0 auto}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
+header p{margin:0;color:var(--mute)}
+.stats{display:flex;flex-wrap:wrap;gap:8px 28px;margin:18px 0 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats div b{display:block;font-size:1.5rem;font-weight:800}
+.stats div span{color:var(--mute);font-size:.85rem}
+nav{display:flex;gap:4px;max-width:1100px;margin:16px auto 0;padding:0 20px}
+nav button{font:inherit;font-weight:600;padding:9px 16px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px 8px 0 0;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--surface);border-bottom-color:var(--surface)}
+main{max-width:1100px;margin:-1px auto 40px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:0 10px 10px 10px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.view[hidden]{display:none}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--mute);font-size:.85rem;margin:0 0 14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:2px solid var(--teal)}
+.legend .p{background:var(--gold);border-color:var(--gold)}.legend .f{background:var(--teal)}
+.block{margin-bottom:20px}
+.block h3{margin:0 0 8px;font-size:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.room{font:inherit;text-align:left;padding:10px;border-radius:6px;border:2px solid var(--teal);background:transparent;color:var(--ink);cursor:pointer}
+.room b{display:block;font-size:1.1rem}.room span{font-size:.8rem}
+.room.p{background:var(--gold);border-color:var(--gold);color:#1b1b12}
+.room.f{background:var(--teal);color:var(--on-teal)}
+.room[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+.panel{border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:8px}
+.panel h3{margin:0 0 8px}
+ul.occ{list-style:none;padding:0;margin:0 0 12px}
+ul.occ li{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end;margin-bottom:18px}
+label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mute);gap:4px}
+input,select{font:inherit;padding:9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.btn{font:inherit;font-weight:600;padding:9px 14px;border:0;border-radius:6px;background:var(--teal);color:var(--on-teal);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--red);border:1px solid var(--line);padding:5px 10px;font-size:.85rem}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);font-size:.92rem}
+th{color:var(--mute);font-weight:600}
+.tag{padding:2px 8px;border-radius:99px;font-size:.8rem;font-weight:600}
+.paid{background:var(--teal);color:var(--on-teal)}.due{background:var(--gold);color:#1b1b12}
+.empty{color:var(--mute);padding:14px 0}
+@media(prefers-reduced-motion:no-preference){.room{transition:transform .12s}.room:hover{transform:translateY(-2px)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Student accommodation</h1>
+  <p>Manage rooms, residents and monthly rent in one place.</p>
+  <div class="stats" id="stats"></div>
+</header>
+<nav role="tablist">
+  <button role="tab" data-v="rooms" aria-selected="true">Rooms</button>
+  <button role="tab" data-v="students" aria-selected="false">Students</button>
+  <button role="tab" data-v="rent" aria-selected="false">Rent</button>
+</nav>
+<main>
+  <section class="view" id="rooms">
+    <div class="legend"><span><i></i>Vacant</span><span><i class="p"></i>Partly filled</span><span><i class="f"></i>Full</span></div>
+    <div id="blocks"></div>
+    <div id="panel"></div>
+  </section>
+  <section class="view" id="students" hidden>
+    <form id="addForm">
+      <label>Full name<input id="fName" required></label>
+      <label>Registration number<input id="fReg" required></label>
+      <label>Course<input id="fCourse" required></label>
+      <label>Phone<input id="fPhone" inputmode="tel"></label>
+      <button class="btn" type="submit">Add student</button>
+    </form>
+    <div class="scroll"><table><thead><tr><th>Name</th><th>Reg. no.</th><th>Course</th><th>Room</th><th></th></tr></thead><tbody id="stBody"></tbody></table></div>
+  </section>
+  <section class="view" id="rent" hidden>
+    <p id="rentSum" class="empty"></p>
+    <div class="scroll"><table><thead><tr><th>Student</th><th>Room</th><th>Monthly rent</th><th>Status</th><th></th></tr></thead><tbody id="rtBody"></tbody></table></div>
+  </section>
+</main>
+<script>
+const RATE=80, KEY="sams-v1";
+const $=s=>document.querySelector(s);
+let rooms=[],students=[],sel=null;
+function seed(){
+  rooms=[];
+  [["A",[1,2]],["B",[1,2]]].forEach(([b,fl])=>fl.forEach(f=>{for(let n=1;n<=5;n++)rooms.push({id:`${b}${f}0${n}`,block:b,cap:n%3==0?3:(n==5?1:2)})}));
+  students=[["Tendai Moyo","MTC-2601","Diploma in Education","0771 000 111","A101",1],["Rudo Chuma","MTC-2602","Diploma in Education","0772 000 222","A101",0],["Farai Ncube","MTC-2603","Diploma in Education","0773 000 333","A103",1],["Nyasha Dube","MTC-2604","Diploma in Education","0774 000 444","B201",0],["Tafara Sibanda","MTC-2605","Diploma in Education","0775 000 555","",0]].map((s,i)=>({id:i+1,name:s[0],reg:s[1],course:s[2],phone:s[3],room:s[4],paid:!!s[5]}));
+}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.rooms){rooms=d.rooms;students=d.students;return}}catch(e){}seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({rooms,students}))}catch(e){}}
+const occ=id=>students.filter(s=>s.room===id);
+function render(){
+  const beds=rooms.reduce((a,r)=>a+r.cap,0),used=students.filter(s=>s.room).length,due=students.filter(s=>s.room&&!s.paid).length;
+  $("#stats").innerHTML=`<div><b>${used}/${beds}</b><span>Beds occupied</span></div><div><b>${rooms.filter(r=>!occ(r.id).length).length}</b><span>Empty rooms</span></div><div><b>${students.filter(s=>!s.room).length}</b><span>Students without a room</span></div><div><b>${due}</b><span>Rent unpaid</span></div>`;
+  $("#blocks").innerHTML=["A","B"].map(b=>`<div class="block"><h3>Block ${b}</h3><div class="grid">${rooms.filter(r=>r.block===b).map(r=>{const n=occ(r.id).length,c=n==0?"":n>=r.cap?"f":"p";return `<button class="room ${c}" data-r="${r.id}" aria-pressed="${sel===r.id}"><b>${r.id}</b><span>${n}/${r.cap} beds</span></button>`}).join("")}</div></div>`).join("");
+  panel();
+  $("#stBody").innerHTML=students.length?students.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.reg)}</td><td>${esc(s.course)}</td><td>${s.room||"Not assigned"}</td><td><button class="btn ghost" data-del="${s.id}">Remove student</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No students yet. Add one above.</td></tr>`;
+  const res=students.filter(s=>s.room);
+  $("#rentSum").textContent=`Collected $${res.filter(s=>s.paid).length*RATE} of $${res.length*RATE} this month.`;
+  $("#rtBody").innerHTML=res.length?res.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.room}</td><td>$${RATE}</td><td><span class="tag ${s.paid?"paid":"due"}">${s.paid?"Paid":"Unpaid"}</span></td><td><button class="btn ghost" style="color:var(--ink)" data-pay="${s.id}">${s.paid?"Mark unpaid":"Mark paid"}</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">Assign students to rooms to start tracking rent.</td></tr>`;
+}
+function panel(){
+  const p=$("#panel");
+  if(!sel){p.innerHTML=`<p class="empty">Select a room to see who lives there and assign students.</p>`;return}
+  const r=rooms.find(x=>x.id===sel),o=occ(sel),free=students.filter(s=>!s.room);
+  p.innerHTML=`<div class="panel"><h3>Room ${r.id} · ${o.length}/${r.cap} beds</h3>${o.length?`<ul class="occ">${o.map(s=>`<li>${esc(s.name)}<button class="btn ghost" data-out="${s.id}">Vacate bed</button></li>`).join("")}</ul>`:`<p class="empty">This room is vacant.</p>`}
+  ${o.length<r.cap?(free.length?`<label>Assign a student<select id="pick">${free.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label><p><button class="btn" id="assign">Assign to room ${r.id}</button></p>`:`<p class="empty">Every student has a room. Add a student to assign more.</p>`):`<p class="empty">This room is full.</p>`}</div>`;
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.v){document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b===t));document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!==t.dataset.v)}
+  if(t.dataset.r)sel=sel===t.dataset.r?null:t.dataset.r;
+  if(t.id==="assign"){const s=students.find(x=>x.id==$("#pick").value);if(s)s.room=sel}
+  if(t.dataset.out)students.find(x=>x.id==t.dataset.out).room="";
+  if(t.dataset.del)students=students.filter(x=>x.id!=t.dataset.del);
+  if(t.dataset.pay){const s=students.find(x=>x.id==t.dataset.pay);s.paid=!s.paid}
+  save();render();
+});
+$("#addForm").addEventListener("submit",e=>{e.preventDefault();students.push({id:Date.now(),name:$("#fName").value.trim(),reg:$("#fReg").value.trim(),course:$("#fCourse").value.trim(),phone:$("#fPhone").value.trim(),room:"",paid:false});e.target.reset();save();render()});
+load();render();
+</script>
+</body>
+</html>
